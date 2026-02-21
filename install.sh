@@ -27,6 +27,23 @@ SOCKS5_PASSWORD="${ANAHITA_SOCKS5_PASSWORD:-$(openssl rand -hex 8)}"
 SVC_SLIP="${PROJECT}-slipstream-server"
 SVC_PROXY="${PROJECT}-proxy"
 
+download_binary() {
+  local url="$1"
+  local dest="$2"
+
+  tmp="$(mktemp)" || exit 1
+
+  trap 'rm -f "$tmp"' EXIT
+
+  echo "→ Downloading $(basename "$dest")..."
+  curl -fsSL "$url" -o "$tmp" || exit 1
+
+  chmod +x "$tmp" || exit 1
+  mv -f "$tmp" "$dest" || exit 1
+
+  trap - EXIT
+}
+
 mkdir -p "$PROJECT_DIR"
 
 [[ ! -f "${PROJECT_DIR}/slipstream.key" ]] && {
@@ -37,17 +54,12 @@ mkdir -p "$PROJECT_DIR"
     -days 365 -subj "/CN=slipstream" 2>/dev/null
 }
 
-[[ ! -x "$SLIP_BINARY" || "${ANAHITA_FORCE_UPDATE:-}" == "true" ]] && {
-  echo "→ Downloading slipstream-server..."
-  curl -fsSL "$SLIP_BINARY_URL" -o "$SLIP_BINARY"
-  chmod +x "$SLIP_BINARY"
-}
+[[ ! -x "$SLIP_BINARY" || "${ANAHITA_FORCE_UPDATE:-}" == "true" ]] &&
+  download_binary "$SLIP_BINARY_URL" "$SLIP_BINARY"
 
-[[ "$SOCKS5_PROXY" == "true" ]] && [[ ! -x "$S5_BINARY" || "${ANAHITA_FORCE_UPDATE:-}" == "true" ]] && {
-  echo "→ Downloading s5..."
-  curl -fsSL "$S5_BINARY_URL" -o "$S5_BINARY"
-  chmod +x "$S5_BINARY"
-}
+[[ "$SOCKS5_PROXY" == "true" ]] &&
+[[ ! -x "$S5_BINARY" || "${ANAHITA_FORCE_UPDATE:-}" == "true" ]] &&
+  download_binary "$S5_BINARY_URL" "$S5_BINARY"
 
 cat > "/etc/systemd/system/${SVC_SLIP}.service" <<EOF
 [Unit]
@@ -112,4 +124,4 @@ systemctl restart "${SVC_SLIP}.service"
 }
 
 echo "✓ ${SVC_SLIP} → ${SLIP_BIND_HOST}:${SLIP_BIND_PORT} (domain: ${DOMAIN})"
-[[ "$SOCKS5_PROXY" == "true" ]] && echo -e "✓ ${SVC_PROXY} → socks5://${SOCKS5_ADDR}:${SOCKS5_PORT}\n✓ socks5 username: ${SOCKS5_USER}\n✓ socks5 password: ${SOCKS5_PASSWORD}"
+[[ "$SOCKS5_PROXY" == "true" ]] && echo -e "✓ ${SVC_PROXY} → socks5://${SOCKS5_ADDR}:${SOCKS5_PORT}\n→ socks5 username: ${SOCKS5_USER}\n→ socks5 password: ${SOCKS5_PASSWORD}"
