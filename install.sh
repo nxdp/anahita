@@ -112,4 +112,4 @@ systemctl restart "${SVC_SLIP}.service"
 }
 
 echo "✓ ${SVC_SLIP} → ${SLIP_BIND_HOST}:${SLIP_BIND_PORT} (domain: ${DOMAIN})"
-[[ "$SOCKS5_PROXY" == "true" ]] && echo -e "✓ ${SVC_PROXY} → socks5://${SOCKS5_ADDR}:${SOCKS5_PORT}\nusername: ${SOCKS5_USER}\npassword: ${SOCKS5_PASSWORD}"
+[[ "$SOCKS5_PROXY" == "true" ]] && echo -e "✓ ${SVC_PROXY} → socks5://${SOCKS5_ADDR}:${SOCKS5_PORT}\n✓ socks5 username: ${SOCKS5_USER}\n✓ socks5 password: ${SOCKS5_PASSWORD}"
