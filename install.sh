@@ -43,7 +43,7 @@ mkdir -p "$PROJECT_DIR"
   chmod +x "$SLIP_BINARY"
 }
 
-[[ "$SOCKS5_PROXY" == "true" && ! -x "$S5_BINARY" || "${ANAHITA_FORCE_UPDATE:-}" == "true" ]] && {
+[[ "$SOCKS5_PROXY" == "true" ]] && [[ ! -x "$S5_BINARY" || "${ANAHITA_FORCE_UPDATE:-}" == "true" ]] && {
   echo "→ Downloading s5..."
   curl -fsSL "$S5_BINARY_URL" -o "$S5_BINARY"
   chmod +x "$S5_BINARY"
