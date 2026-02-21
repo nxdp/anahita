@@ -47,6 +47,8 @@ All variables are optional except `ANAHITA_DOMAIN`.
 | `ANAHITA_SOCKS5_PROXY` | `true` | deploy SOCKS5 proxy alongside |
 | `ANAHITA_SOCKS5_ADDR` | `127.0.0.1` | SOCKS5 listen address |
 | `ANAHITA_SOCKS5_PORT` | `$ANAHITA_SLIP_TARGET_PORT` | SOCKS5 listen port |
+| `ANAHITA_SOCKS5_USER` | `$(openssl rand -hex 8)` | SOCKS5 proxy username |
+| `ANAHITA_SOCKS5_PASSWORD` | `$(openssl rand -hex 8)` | SOCKS5 proxy password |
 | `ANAHITA_FORCE_UPDATE` | `false` | set to `true` to re-download binary |
 
 ## Examples
