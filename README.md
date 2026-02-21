@@ -5,7 +5,7 @@ One-command deployment of a [slipstream-rust](https://github.com/Mygod/slipstrea
 ## Requirements
 
 - Linux with systemd
-- `curl`, `openssl`, `ssh-keygen` available
+- `curl`, `openssl` available
 - Root access
 
 ## Usage
@@ -36,8 +36,10 @@ All variables are optional except `ANAHITA_DOMAIN`.
 |---|---|---|
 | `ANAHITA_DOMAIN` | **required** | DNS tunnel domain |
 | `ANAHITA_PROJECT_DIR` | `/opt/anahita` | project dir (keys stored here) |
-| `ANAHITA_SLIP_BINARY_URL` | latest GitHub release | slipstream-server download URL |
+| `ANAHITA_SLIP_BINARY_URL` | latest GitHub release (amd64) | slipstream-server download URL |
 | `ANAHITA_SLIP_BINARY` | `/usr/local/bin/slipstream-server` | slipstream-server binary install path |
+| `ANAHITA_S5_BINARY_URL` | latest GitHub release (amd64) | s5 download URL |
+| `ANAHITA_S5_BINARY` | `/usr/local/bin/s5` | s5 binary install path |
 | `ANAHITA_SLIP_BIND_HOST` | auto-detected primary IPv4 | slipstream bind address |
 | `ANAHITA_SLIP_BIND_PORT` | `53` | slipstream bind port |
 | `ANAHITA_SLIP_TARGET_ADDR` | `127.0.0.1` | tunnel target address |
@@ -53,15 +55,16 @@ All variables are optional except `ANAHITA_DOMAIN`.
 
 ## Examples
 
-**Minimal — DNS tunnel only:**
+**Minimal (DNS tunnel only):**
 ```bash
 export ANAHITA_DOMAIN=t.example.com
-export ANAHITA_SSH_PROXY=false
+export ANAHITA_SOCKS5_PROXY=false
+export ANAHITA_SLIP_TARGET_PORT=8080 # your custom proxy
 
 curl -fsSL https://raw.githubusercontent.com/nxdp/anahita/main/install.sh | bash
 ```
 
-**Full setup:**
+**Full setup (with SOCKS5):**
 ```bash
 export ANAHITA_DOMAIN=t.example.com
 export ANAHITA_SOCKS5_USER="username"
