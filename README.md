@@ -21,12 +21,22 @@ curl -fsSL https://raw.githubusercontent.com/nxdp/anahita/main/install.sh | bash
 ```
 
 ```
-real    0m3.905s
-user    0m1.388s
-sys     0m0.142s
+→ Generating slipstream keys...
+→ Downloading slipstream-server...
+→ Downloading s5...
+
+  slipstream  →  203.0.113.2:53  (t.example.com)
+  socks5      →  127.0.0.1:5201
+  user        →  78490af8bdd15663
+  pass        →  47f7eb7505ba1d07
+
+
+real    0m1.350s
+user    0m0.258s
+sys     0m0.083s
 ```
 
-That's it. under 5 seconds.
+That's it. under 2 seconds.
 
 ## Configuration
 
