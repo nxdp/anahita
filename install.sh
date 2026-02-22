@@ -52,14 +52,14 @@ mkdir -p "$PROJECT_DIR"
     -keyout "${PROJECT_DIR}/slipstream.key" \
     -out "${PROJECT_DIR}/slipstream.pub" \
     -days 365 -subj "/CN=slipstream" 2>/dev/null
-}
+} &
 
 [[ ! -x "$SLIP_BINARY" || "${ANAHITA_FORCE_UPDATE:-}" == "true" ]] &&
-  download_binary "$SLIP_BINARY_URL" "$SLIP_BINARY"
+  download_binary "$SLIP_BINARY_URL" "$SLIP_BINARY" &
 
 [[ "$SOCKS5_PROXY" == "true" ]] &&
 [[ ! -x "$S5_BINARY" || "${ANAHITA_FORCE_UPDATE:-}" == "true" ]] &&
-  download_binary "$S5_BINARY_URL" "$S5_BINARY"
+  download_binary "$S5_BINARY_URL" "$S5_BINARY" &
 
 cat > "/etc/systemd/system/${SVC_SLIP}.service" <<EOF
 [Unit]
@@ -115,13 +115,22 @@ EOF
 }
 
 systemctl daemon-reload
-systemctl enable --now "${SVC_SLIP}.service" 2>/dev/null
-systemctl restart "${SVC_SLIP}.service"
+
+wait
+
+systemctl --no-block enable -q "${SVC_SLIP}.service"
+systemctl --no-block restart "${SVC_SLIP}.service"
 
 [[ "$SOCKS5_PROXY" == "true" ]] && {
-  systemctl enable --now "${SVC_PROXY}.service" 2>/dev/null
-  systemctl restart "${SVC_PROXY}.service"
+  systemctl --no-block enable -q "${SVC_PROXY}.service"
+  systemctl --no-block restart "${SVC_PROXY}.service"
 }
 
-echo "✓ ${SVC_SLIP} → ${SLIP_BIND_HOST}:${SLIP_BIND_PORT} (domain: ${DOMAIN})"
-[[ "$SOCKS5_PROXY" == "true" ]] && echo -e "✓ ${SVC_PROXY} → socks5://${SOCKS5_ADDR}:${SOCKS5_PORT}\n→ socks5 username: ${SOCKS5_USER}\n→ socks5 password: ${SOCKS5_PASSWORD}"
+echo ""
+echo "  slipstream  →  ${SLIP_BIND_HOST}:${SLIP_BIND_PORT}  (${DOMAIN})"
+[[ "$SOCKS5_PROXY" == "true" ]] && cat <<EOF
+  socks5      →  ${SOCKS5_ADDR}:${SOCKS5_PORT}
+  user        →  ${SOCKS5_USER}
+  pass        →  ${SOCKS5_PASSWORD}
+EOF
+echo ""
