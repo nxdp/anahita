@@ -64,8 +64,7 @@ mkdir -p "$PROJECT_DIR"
 cat > "/etc/systemd/system/${SVC_SLIP}.service" <<EOF
 [Unit]
 Description=Anahita Slipstream DNS Tunnel
-After=network-online.target
-Requires=network-online.target
+After=network.target nss-lookup.target
 StartLimitIntervalSec=0
 StartLimitBurst=0
 
@@ -93,8 +92,7 @@ EOF
   cat > "/etc/systemd/system/${SVC_PROXY}.service" <<EOF
 [Unit]
 Description=Anahita SOCKS5 Proxy
-After=network-online.target
-Wants=network-online.target
+After=network.target nss-lookup.target
 StartLimitIntervalSec=0
 StartLimitBurst=0
 
