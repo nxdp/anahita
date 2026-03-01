@@ -8,7 +8,7 @@ PROJECT_DIR="${ANAHITA_PROJECT_DIR:-/opt/${PROJECT}}"
 SLIP_BINARY="${ANAHITA_SLIP_BINARY:-/usr/local/bin/slipstream-server}"
 SLIP_BINARY_URL="${ANAHITA_BINARY_URL:-https://github.com/net2share/slipstream-rust-build/releases/download/v2026.02.05/slipstream-server-linux-amd64}"
 S5_BINARY="${ANAHITA_S5_BINARY:-/usr/local/bin/s5}"
-S5_BINARY_URL="${ANAHITA_S5_BINARY_URL:-https://github.com/nxdp/s5/releases/download/v0.0.2/s5-linux-amd64}"
+S5_BINARY_URL="${ANAHITA_S5_BINARY_URL:-https://github.com/nxdp/s5/releases/download/v0.0.1/s5-linux-amd64}"
 
 PRIMARY_IP="$(ip route get 8.8.8.8 | awk '{print $7}')"
 SLIP_BIND_HOST="${ANAHITA_SLIP_BIND_HOST:-$PRIMARY_IP}"
