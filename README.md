@@ -1,11 +1,11 @@
 # ANAHITA
 
-One-command deployment of a [slipstream-rust](https://github.com/Mygod/slipstream-rust) DNS tunnel with an optional [SOCKS5](https://github.com/nxdp/s5) proxy.
+One-command deployment of a [slipstream-rust](https://github.com/Mygod/slipstream-rust) DNS tunnel with an optional [SOCKS5](https://github.com/XTLS/Xray-core) proxy.
 
 ## Requirements
 
 - Linux with systemd
-- `curl`, `openssl` available
+- `curl`, `openssl`, `unzip` available
 - Root access
 
 ## Usage
@@ -23,12 +23,12 @@ curl -fsSL https://raw.githubusercontent.com/nxdp/anahita/main/install.sh | bash
 ```
 → Generating slipstream keys...
 → Downloading slipstream-server...
-→ Downloading s5...
+→ Downloading xray...
 
   slipstream  →  203.0.113.2:53  (t.example.com)
   socks5      →  127.0.0.1:5201
-  user        →  78490af8bdd15663
-  pass        →  47f7eb7505ba1d07
+  user        →  86612f10
+  pass        →  e4749ec8
 
 
 real    0m1.350s
@@ -48,8 +48,9 @@ All variables are optional except `ANAHITA_DOMAIN`.
 | `ANAHITA_PROJECT_DIR` | `/opt/anahita` | project dir (keys stored here) |
 | `ANAHITA_SLIP_BINARY_URL` | latest GitHub release (amd64) | slipstream-server download URL |
 | `ANAHITA_SLIP_BINARY` | `/usr/local/bin/slipstream-server` | slipstream-server binary install path |
-| `ANAHITA_S5_BINARY_URL` | latest GitHub release (amd64) | s5 download URL |
-| `ANAHITA_S5_BINARY` | `/usr/local/bin/s5` | s5 binary install path |
+| `ANAHITA_XRAY_ARCHIVE_URL` | `https://github.com/XTLS/Xray-core/releases/download/v26.2.6/Xray-linux-64.zip` | Xray archive download URL |
+| `ANAHITA_XRAY_BINARY` | `/usr/local/bin/xray` | Xray binary install path |
+| `ANAHITA_XRAY_CONFIG` | `$ANAHITA_PROJECT_DIR/conf/config.json` | Xray config file path |
 | `ANAHITA_SLIP_BIND_HOST` | auto-detected primary IPv4 | slipstream bind address |
 | `ANAHITA_SLIP_BIND_PORT` | `53` | slipstream bind port |
 | `ANAHITA_SLIP_TARGET_ADDR` | `127.0.0.1` | tunnel target address |
