@@ -50,7 +50,7 @@ All variables are optional except `ANAHITA_DOMAIN`.
 | `ANAHITA_SLIP_BINARY` | `/usr/local/bin/slipstream-server` | slipstream-server binary install path |
 | `ANAHITA_XRAY_ARCHIVE_URL` | `https://github.com/XTLS/Xray-core/releases/download/v26.2.6/Xray-linux-64.zip` | Xray archive download URL |
 | `ANAHITA_XRAY_BINARY` | `/usr/local/bin/xray` | Xray binary install path |
-| `ANAHITA_XRAY_CONFIG` | `$ANAHITA_PROJECT_DIR/conf/config.json` | Xray config file path |
+| `ANAHITA_XRAY_CONFIG` | `$ANAHITA_PROJECT_DIR/config.json` | Xray config file path |
 | `ANAHITA_SLIP_BIND_HOST` | auto-detected primary IPv4 | slipstream bind address |
 | `ANAHITA_SLIP_BIND_PORT` | `53` | slipstream bind port |
 | `ANAHITA_SLIP_TARGET_ADDR` | `127.0.0.1` | tunnel target address |
