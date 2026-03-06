@@ -33,14 +33,6 @@ SOCKS5_PASSWORD="${SOCKS5_PASSWORD:-$(openssl rand -hex 4)}"
 
 SVC_TUNNEL="${PROJECT}-dns-tunnel"
 SVC_PROXY="${PROJECT}-proxy"
-SVC_OLD_SLIP="${PROJECT}-slipstream-server"
-
-wait_or_fail() {
-  local pid
-  for pid in "$@"; do
-    wait "$pid" || exit 1
-  done
-}
 
 download_binary() {
   local url="$1"
@@ -104,8 +96,8 @@ else
   TUNNEL_EXEC="${SLIP_BINARY} --dns-listen-host ${BIND_HOST} --dns-listen-port ${BIND_PORT} --target-address ${TARGET_ADDR}:${TARGET_PORT} --domain ${DOMAIN} --cert ${PROJECT_DIR}/slipstream.pub --key ${PROJECT_DIR}/slipstream.key --max-connections ${MAX_CONN} --idle-timeout-seconds ${IDLE_TIMEOUT}"
 fi
 
-prepare_tunnel_assets() {
-  if [[ "$TUNNEL_ENGINE" == "dnstt" ]]; then
+if [[ "$TUNNEL_ENGINE" == "dnstt" ]]; then
+  {
     [[ ! -x "$DNSTT_BINARY" || "$FORCE_UPDATE" == "true" ]] &&
       download_binary "$DNSTT_BINARY_URL" "$DNSTT_BINARY"
 
@@ -115,39 +107,23 @@ prepare_tunnel_assets() {
         -privkey-file "${PROJECT_DIR}/dnstt.key" \
         -pubkey-file "${PROJECT_DIR}/dnstt.pub" >/dev/null
     }
-    return
-  fi
-
-  local pids=()
-
+  } &
+else
   [[ ! -f "${PROJECT_DIR}/slipstream.key" ]] && {
-    {
-      echo "→ Generating slipstream keys..."
-      openssl req -x509 -newkey rsa:2048 -nodes \
-        -keyout "${PROJECT_DIR}/slipstream.key" \
-        -out "${PROJECT_DIR}/slipstream.pub" \
-        -days 365 -subj "/CN=slipstream" 2>/dev/null
-    } &
-    pids+=("$!")
-  }
+    echo "→ Generating slipstream keys..."
+    openssl req -x509 -newkey rsa:2048 -nodes \
+      -keyout "${PROJECT_DIR}/slipstream.key" \
+      -out "${PROJECT_DIR}/slipstream.pub" \
+      -days 365 -subj "/CN=slipstream" 2>/dev/null
+  } &
 
-  [[ ! -x "$SLIP_BINARY" || "$FORCE_UPDATE" == "true" ]] && {
+  [[ ! -x "$SLIP_BINARY" || "$FORCE_UPDATE" == "true" ]] &&
     download_binary "$SLIP_BINARY_URL" "$SLIP_BINARY" &
-    pids+=("$!")
-  }
-
-  [[ "${#pids[@]}" -gt 0 ]] && wait_or_fail "${pids[@]}"
-}
-
-pids=()
-prepare_tunnel_assets &
-pids+=("$!")
+fi
 
 [[ "$SOCKS5_PROXY" == "true" ]] &&
-[[ ! -x "$XRAY_BINARY" || "$FORCE_UPDATE" == "true" ]] && {
+[[ ! -x "$XRAY_BINARY" || "$FORCE_UPDATE" == "true" ]] &&
   download_archive_binary "$XRAY_ARCHIVE_URL" "$XRAY_BINARY" "xray" &
-  pids+=("$!")
-}
 
 cat > "/etc/systemd/system/${SVC_TUNNEL}.service" <<EOF
 [Unit]
@@ -255,13 +231,9 @@ WantedBy=multi-user.target
 EOF
 }
 
-systemctl --no-block stop "${SVC_OLD_SLIP}.service" >/dev/null 2>&1 || true
-systemctl --no-block disable "${SVC_OLD_SLIP}.service" >/dev/null 2>&1 || true
-rm -f "/etc/systemd/system/${SVC_OLD_SLIP}.service"
-
-wait_or_fail "${pids[@]}"
-
 systemctl daemon-reload
+
+wait
 
 systemctl --no-block enable -q "${SVC_TUNNEL}.service"
 systemctl --no-block restart "${SVC_TUNNEL}.service"

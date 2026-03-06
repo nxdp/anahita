@@ -118,6 +118,13 @@ journalctl -fu anahita-dns-tunnel
 journalctl -fu anahita-proxy
 ```
 
+If you used older versions with `anahita-slipstream-server`, clean it manually:
+```bash
+systemctl disable --now anahita-slipstream-server
+rm -f /etc/systemd/system/anahita-slipstream-server.service
+systemctl daemon-reload
+```
+
 ## Idempotent
 
 Safe to run multiple times. Re-running updates service configs and restarts services. Tunnel keys are generated once, while SOCKS5 user/pass are regenerated each run unless explicitly set.
