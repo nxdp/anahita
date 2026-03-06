@@ -6,7 +6,7 @@ DOMAIN="${ANAHITA_DOMAIN:?'domain is required: export ANAHITA_DOMAIN=t.domain.tl
 PROJECT="anahita"
 PROJECT_DIR="${ANAHITA_PROJECT_DIR:-/opt/${PROJECT}}"
 SLIP_BINARY="${ANAHITA_SLIP_BINARY:-/usr/local/bin/slipstream-server}"
-SLIP_BINARY_URL="${ANAHITA_BINARY_URL:-https://github.com/net2share/slipstream-rust-build/releases/download/v2026.02.05/slipstream-server-linux-amd64}"
+SLIP_BINARY_URL="${ANAHITA_BINARY_URL:-https://github.com/net2share/slipstream-rust-build/releases/download/v2026.02.22.1/slipstream-server-linux-amd64}"
 XRAY_BINARY="${ANAHITA_XRAY_BINARY:-/usr/local/bin/xray}"
 XRAY_ARCHIVE_URL="${ANAHITA_XRAY_ARCHIVE_URL:-https://github.com/XTLS/Xray-core/releases/download/v26.2.6/Xray-linux-64.zip}"
 XRAY_CONFIG="${ANAHITA_XRAY_CONFIG:-${PROJECT_DIR}/config.json}"
