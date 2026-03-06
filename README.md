@@ -1,6 +1,6 @@
 # ANAHITA
 
-One-command deployment of a [slipstream-rust](https://github.com/Mygod/slipstream-rust) DNS tunnel with an optional [SOCKS5](https://github.com/XTLS/Xray-core) proxy.
+One-command deployment of a DNS tunnel (`dnstt` or `slipstream`) with an optional [SOCKS5](https://github.com/XTLS/Xray-core) proxy.
 
 ## Requirements
 
@@ -12,20 +12,22 @@ One-command deployment of a [slipstream-rust](https://github.com/Mygod/slipstrea
 
 Set your domain, then run:
 ```bash
-ANAHITA_DOMAIN=t.example.com bash <(curl -fsSL https://raw.githubusercontent.com/nxdp/anahita/main/install.sh)
+DOMAIN=t.example.com bash <(curl -fsSL https://raw.githubusercontent.com/nxdp/anahita/main/install.sh)
 ```
 Alternative:
 ```bash
-export ANAHITA_DOMAIN=t.example.com
+export DOMAIN=t.example.com
 curl -fsSL https://raw.githubusercontent.com/nxdp/anahita/main/install.sh | bash
 ```
 
 ```
-→ Generating slipstream keys...
-→ Downloading slipstream-server...
+→ Generating dnstt keys...
 → Downloading xray...
 
-  slipstream  →  203.0.113.2:53  (t.example.com)
+  engine      →  dnstt
+  dns tunnel  →  203.0.113.2:53  (t.example.com)
+  target      →  127.0.0.1:5201
+  pubkey      →  939700acff5ba1c0...
   socks5      →  127.0.0.1:5201
   user        →  86612f10
   pass        →  e4749ec8
@@ -40,54 +42,66 @@ That's it. under 2 seconds.
 
 ## Configuration
 
-All variables are optional except `ANAHITA_DOMAIN`.
+All variables are optional except `DOMAIN`.
 
 | Variable | Default | Description |
 |---|---|---|
-| `ANAHITA_DOMAIN` | **required** | DNS tunnel domain |
-| `ANAHITA_PROJECT_DIR` | `/opt/anahita` | project dir (keys stored here) |
-| `ANAHITA_SLIP_BINARY_URL` | latest GitHub release (amd64) | slipstream-server download URL |
-| `ANAHITA_SLIP_BINARY` | `/usr/local/bin/slipstream-server` | slipstream-server binary install path |
-| `ANAHITA_XRAY_ARCHIVE_URL` | `https://github.com/XTLS/Xray-core/releases/download/v26.2.6/Xray-linux-64.zip` | Xray archive download URL |
-| `ANAHITA_XRAY_BINARY` | `/usr/local/bin/xray` | Xray binary install path |
-| `ANAHITA_XRAY_CONFIG` | `$ANAHITA_PROJECT_DIR/config.json` | Xray config file path |
-| `ANAHITA_SLIP_BIND_HOST` | auto-detected primary IPv4 | slipstream bind address |
-| `ANAHITA_SLIP_BIND_PORT` | `53` | slipstream bind port |
-| `ANAHITA_SLIP_TARGET_ADDR` | `127.0.0.1` | tunnel target address |
-| `ANAHITA_SLIP_TARGET_PORT` | `5201` | tunnel target port |
-| `ANAHITA_SLIP_MAX_CONN` | `512` | max concurrent connections |
-| `ANAHITA_SLIP_IDLE_TIMEOUT` | `3` | idle timeout in seconds |
-| `ANAHITA_SOCKS5_PROXY` | `true` | deploy SOCKS5 proxy alongside |
-| `ANAHITA_SOCKS5_ADDR` | `127.0.0.1` | SOCKS5 listen address |
-| `ANAHITA_SOCKS5_PORT` | `$ANAHITA_SLIP_TARGET_PORT` | SOCKS5 listen port |
-| `ANAHITA_SOCKS5_USER` | `$(openssl rand -hex 4)` | SOCKS5 proxy username |
-| `ANAHITA_SOCKS5_PASSWORD` | `$(openssl rand -hex 4)` | SOCKS5 proxy password |
-| `ANAHITA_FORCE_UPDATE` | `false` | set to `true` to re-download binary |
+| `DOMAIN` | **required** | DNS tunnel domain |
+| `TUNNEL_ENGINE` | `dnstt` | `dnstt` or `slipstream` |
+| `PROJECT_DIR` | `/opt/anahita` | project dir (keys stored here) |
+| `DNSTT_BINARY` | `/usr/local/bin/dnstt-server` | dnstt-server binary install path |
+| `DNSTT_BINARY_URL` | `https://github.com/net2share/dnstt/releases/download/latest/dnstt-server-linux-amd64` | dnstt-server download URL |
+| `SLIP_BINARY_URL` | latest GitHub release (amd64) | slipstream-server download URL |
+| `SLIP_BINARY` | `/usr/local/bin/slipstream-server` | slipstream-server binary install path |
+| `XRAY_ARCHIVE_URL` | `https://github.com/XTLS/Xray-core/releases/download/v26.2.6/Xray-linux-64.zip` | Xray archive download URL |
+| `XRAY_BINARY` | `/usr/local/bin/xray` | Xray binary install path |
+| `XRAY_CONFIG` | `$PROJECT_DIR/config.json` | Xray config file path |
+| `BIND_HOST` | auto-detected primary IPv4 | DNS tunnel bind address |
+| `BIND_PORT` | `53` | DNS tunnel bind port |
+| `TARGET_ADDR` | `127.0.0.1` | tunnel target address |
+| `TARGET_PORT` | `5201` | tunnel target port |
+| `MTU` | `1232` | dnstt MTU |
+| `MAX_CONN` | `512` | max concurrent connections (slipstream only) |
+| `IDLE_TIMEOUT` | `60` | idle timeout in seconds (slipstream only) |
+| `SOCKS5_PROXY` | `true` | deploy SOCKS5 proxy alongside |
+| `SOCKS5_ADDR` | `127.0.0.1` | SOCKS5 listen address |
+| `SOCKS5_PORT` | `$TARGET_PORT` | SOCKS5 listen port |
+| `SOCKS5_USER` | `$(openssl rand -hex 4)` | SOCKS5 proxy username |
+| `SOCKS5_PASSWORD` | `$(openssl rand -hex 4)` | SOCKS5 proxy password |
+| `FORCE_UPDATE` | `false` | set to `true` to re-download binary |
 
 ## Examples
 
 **Minimal (DNS tunnel only):**
 ```bash
-export ANAHITA_DOMAIN=t.example.com
-export ANAHITA_SOCKS5_PROXY=false
-export ANAHITA_SLIP_TARGET_PORT=8080 # your custom proxy
+export DOMAIN=t.example.com
+export SOCKS5_PROXY=false
+export TARGET_PORT=8080 # your custom proxy
+
+curl -fsSL https://raw.githubusercontent.com/nxdp/anahita/main/install.sh | bash
+```
+
+**Use slipstream engine:**
+```bash
+export DOMAIN=t.example.com
+export TUNNEL_ENGINE=slipstream
 
 curl -fsSL https://raw.githubusercontent.com/nxdp/anahita/main/install.sh | bash
 ```
 
 **Full setup (with SOCKS5):**
 ```bash
-export ANAHITA_DOMAIN=t.example.com
-export ANAHITA_SOCKS5_USER="username"
-export ANAHITA_SOCKS5_PASSWORD="password"
+export DOMAIN=t.example.com
+export SOCKS5_USER="username"
+export SOCKS5_PASSWORD="password"
 
 curl -fsSL https://raw.githubusercontent.com/nxdp/anahita/main/install.sh | bash
 ```
 
 **Force re-download binary and update services:**
 ```bash
-export ANAHITA_DOMAIN=t.example.com
-export ANAHITA_FORCE_UPDATE=true
+export DOMAIN=t.example.com
+export FORCE_UPDATE=true
 
 curl -fsSL https://raw.githubusercontent.com/nxdp/anahita/main/install.sh | bash
 ```
@@ -96,14 +110,14 @@ curl -fsSL https://raw.githubusercontent.com/nxdp/anahita/main/install.sh | bash
 
 ```bash
 # status
-systemctl status anahita-slipstream-server
+systemctl status anahita-dns-tunnel
 systemctl status anahita-proxy
 
 # logs
-journalctl -fu anahita-slipstream-server
+journalctl -fu anahita-dns-tunnel
 journalctl -fu anahita-proxy
 ```
 
 ## Idempotent
 
-Safe to run multiple times. Re-running updates service configs and restarts services. Keys are never regenerated once created.
+Safe to run multiple times. Re-running updates service configs and restarts services. Tunnel keys are generated once, while SOCKS5 user/pass are regenerated each run unless explicitly set.
